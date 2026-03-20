@@ -1,0 +1,681 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: SkillChain API - Skill Barter Platform
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: users
+    description: User profile operations
+  - name: skills
+    description: Skill management
+  - name: matches
+    description: Skill matching
+  - name: sessions
+    description: Session booking
+  - name: messages
+    description: Chat messages
+  - name: reviews
+    description: Ratings and reviews
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List all users
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    post:
+      operationId: createUser
+      tags: [users]
+      summary: Create a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    put:
+      operationId: updateUser
+      tags: [users]
+      summary: Update user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /skills:
+    get:
+      operationId: listSkills
+      tags: [skills]
+      summary: List all available skills
+      responses:
+        "200":
+          description: List of skills
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Skill"
+    post:
+      operationId: createSkill
+      tags: [skills]
+      summary: Create a skill
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSkillRequest"
+      responses:
+        "201":
+          description: Skill created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Skill"
+
+  /matches:
+    get:
+      operationId: listMatches
+      tags: [matches]
+      summary: Get AI-based skill matches for current user
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of skill matches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Match"
+
+  /sessions:
+    get:
+      operationId: listSessions
+      tags: [sessions]
+      summary: List sessions for a user
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Session"
+    post:
+      operationId: createSession
+      tags: [sessions]
+      summary: Book a new skill exchange session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSessionRequest"
+      responses:
+        "201":
+          description: Session booked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+
+  /sessions/{id}:
+    put:
+      operationId: updateSession
+      tags: [sessions]
+      summary: Update session status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSessionRequest"
+      responses:
+        "200":
+          description: Session updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+
+  /messages:
+    get:
+      operationId: listMessages
+      tags: [messages]
+      summary: Get messages between two users
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: partnerId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+    post:
+      operationId: sendMessage
+      tags: [messages]
+      summary: Send a message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendMessageRequest"
+      responses:
+        "201":
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+
+  /reviews:
+    get:
+      operationId: listReviews
+      tags: [reviews]
+      summary: Get reviews for a user
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+    post:
+      operationId: createReview
+      tags: [reviews]
+      summary: Leave a review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReviewRequest"
+      responses:
+        "201":
+          description: Review created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+
+  /stats:
+    get:
+      operationId: getPlatformStats
+      tags: [users]
+      summary: Get platform statistics
+      responses:
+        "200":
+          description: Platform stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformStats"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        bio:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        trustScore:
+          type: number
+        sessionsCompleted:
+          type: integer
+        badges:
+          type: array
+          items:
+            type: string
+        skillsOffered:
+          type: array
+          items:
+            $ref: "#/components/schemas/Skill"
+        skillsWanted:
+          type: array
+          items:
+            $ref: "#/components/schemas/Skill"
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - email
+        - trustScore
+        - sessionsCompleted
+        - badges
+        - skillsOffered
+        - skillsWanted
+        - createdAt
+
+    CreateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        bio:
+          type: string
+        location:
+          type: string
+        skillsOffered:
+          type: array
+          items:
+            type: string
+        skillsWanted:
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - email
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        bio:
+          type: string
+        location:
+          type: string
+        avatar:
+          type: string
+        skillsOffered:
+          type: array
+          items:
+            type: string
+        skillsWanted:
+          type: array
+          items:
+            type: string
+
+    Skill:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+        level:
+          type: string
+          enum: [beginner, intermediate, advanced, expert]
+      required:
+        - id
+        - name
+        - category
+        - level
+
+    CreateSkillRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        level:
+          type: string
+          enum: [beginner, intermediate, advanced, expert]
+        userId:
+          type: integer
+        type:
+          type: string
+          enum: [offered, wanted]
+      required:
+        - name
+        - category
+        - level
+        - userId
+        - type
+
+    Match:
+      type: object
+      properties:
+        id:
+          type: integer
+        user:
+          $ref: "#/components/schemas/User"
+        matchScore:
+          type: number
+        sharedSkills:
+          type: array
+          items:
+            type: string
+        complementarySkills:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [suggested, connected, pending]
+      required:
+        - id
+        - user
+        - matchScore
+        - sharedSkills
+        - complementarySkills
+        - status
+
+    Session:
+      type: object
+      properties:
+        id:
+          type: integer
+        initiatorId:
+          type: integer
+        partnerId:
+          type: integer
+        initiator:
+          $ref: "#/components/schemas/User"
+        partner:
+          $ref: "#/components/schemas/User"
+        skillOffered:
+          type: string
+        skillRequested:
+          type: string
+        scheduledAt:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+          description: Duration in minutes
+        status:
+          type: string
+          enum: [pending, confirmed, completed, cancelled]
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - initiatorId
+        - partnerId
+        - initiator
+        - partner
+        - skillOffered
+        - skillRequested
+        - scheduledAt
+        - duration
+        - status
+        - createdAt
+
+    CreateSessionRequest:
+      type: object
+      properties:
+        initiatorId:
+          type: integer
+        partnerId:
+          type: integer
+        skillOffered:
+          type: string
+        skillRequested:
+          type: string
+        scheduledAt:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+        notes:
+          type: string
+      required:
+        - initiatorId
+        - partnerId
+        - skillOffered
+        - skillRequested
+        - scheduledAt
+        - duration
+
+    UpdateSessionRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, confirmed, completed, cancelled]
+        notes:
+          type: string
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+        senderId:
+          type: integer
+        receiverId:
+          type: integer
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        read:
+          type: boolean
+      required:
+        - id
+        - senderId
+        - receiverId
+        - content
+        - createdAt
+        - read
+
+    SendMessageRequest:
+      type: object
+      properties:
+        senderId:
+          type: integer
+        receiverId:
+          type: integer
+        content:
+          type: string
+      required:
+        - senderId
+        - receiverId
+        - content
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+        reviewerId:
+          type: integer
+        revieweeId:
+          type: integer
+        reviewer:
+          $ref: "#/components/schemas/User"
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+        skillExchanged:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - reviewerId
+        - revieweeId
+        - reviewer
+        - rating
+        - comment
+        - skillExchanged
+        - createdAt
+
+    CreateReviewRequest:
+      type: object
+      properties:
+        reviewerId:
+          type: integer
+        revieweeId:
+          type: integer
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+        skillExchanged:
+          type: string
+      required:
+        - reviewerId
+        - revieweeId
+        - rating
+        - comment
+        - skillExchanged
+
+    PlatformStats:
+      type: object
+      properties:
+        totalUsers:
+          type: integer
+        totalSessions:
+          type: integer
+        totalSkills:
+          type: integer
+        totalReviews:
+          type: integer
+        avgTrustScore:
+          type: number
+      required:
+        - totalUsers
+        - totalSessions
+        - totalSkills
+        - totalReviews
+        - avgTrustScore
